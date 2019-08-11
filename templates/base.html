@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Park at UT</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}">
+    <link rel="stylesheet" href="/static/css/common.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.4.1.js"
+            integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.15/lodash.min.js"
+            integrity="sha256-VeNaFBVDhoX3H+gJ37DpT/nTuZTdjYro9yBruHjVmoQ=" crossorigin="anonymous"></script>
+    {% if js %}
+        <script type="text/javascript" src="/static/js/{{ js }}"></script>
+    {% endif %}
+</head>
+<body>
+<nav class="park-navbar navbar navbar-dark bg-primary justify-content-between">
+    <a class="navbar-brand">Park at UT</a>
+    <form name="logout" method="post" action="/logout">
+        {% if show_logout %}
+            <button type="submit" class="btn btn-primary btn-block" name="logout">Log out</button>{% endif %}
+    </form>
+</nav>
+<br/>
+<div class="container">
+    {% block content %}{% endblock %}
+</div>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Park at UT</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+</head>
+<body>
+<div class="container">
+    <h3>Users</h3>
+    {% for user in users %}
+        <div class="media">
+            <div class="media-body">
+                <h4>{{ user.name }}</h4>
+                <p>{{ user.email }}</p>
+                <span>{{ user.password }}</span>
+            </div>
+        </div>
+    {% else %}
+        <p>No users found</p>
+    {% endfor %}
+</div>
+</body>
+</html>
