@@ -32,7 +32,7 @@ class Garage(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(255), nullable=False, unique=True)
     address = db.Column(db.String(255), nullable=False)
-    spots = db.relationship('Spot', backref='garage', lazy=False)
+    spots = db.relationship('Spot', lazy=False)
 
     def __repr__(self):
         return "<Garage(name='%s', address=%s)" % (self.name, self.address)
@@ -82,8 +82,15 @@ def validate(reservation: Reservation):
     if reservation is None or reservation.occupied is True:
         return True
     else:
-        expiry = reservation.time
-        return expiry > datetime.now()
+        return reservation.time > datetime.now()
+
+
+def details(reservation: Reservation):
+    spot = one(Spot, reservation.spot_id)
+    garage_dict = convert(one(Garage, spot.garage_id))
+    garage_dict['spot'] = convert(spot)
+    garage_dict.pop('spots')
+    return garage_dict
 
 
 def refresh():
@@ -95,12 +102,12 @@ def refresh():
                 abort(reservation)
 
 
-def details(user_id):
+def inform(user_id):
     existing_reservation = one(User, user_id).reservation
 
     if existing_reservation is not None:
         if validate(existing_reservation):
-            return convert(one(Spot, existing_reservation.spot_id))
+            return details(existing_reservation)
 
     refresh()
 
@@ -113,27 +120,34 @@ def reserve(user_id, garage_id):
             .filter_by(reservation=None)
             .first())
 
-    new_reservation = {
+    reservation = {
         'occupied': False,
         'user_id': user_id,
         'spot_id': spot.id,
         'time': datetime.now() + timedelta(seconds=10)
     }
 
-    create(Reservation, new_reservation)
+    create(Reservation, reservation)
     return True
 
 
-def occupy(reservation_id):
-    reservation = one(Reservation, reservation_id)
+def occupy(user_id):
+    reservation = one(User, user_id).reservation
     setattr(reservation, 'occupied', True)
     setattr(reservation, 'time', datetime.now())
     db.session.commit()
     return True
 
 
+def clear(user_id):
+    reservation = one(User, user_id).reservation
+    db.session.delete(reservation)
+    db.session.commit()
+    return True
+
+
 def many(model):
-    return list(model.query.all())
+    return model.query.all()
 
 
 def one(model, key):
@@ -148,19 +162,6 @@ def create(model, data):
     db.session.add(row)
     db.session.commit()
     return row
-
-
-def update(data, id):
-    user = User.query.get(id)
-    for k, v in data.items():
-        setattr(user, k, v)
-    db.session.commit()
-    return user
-
-
-def delete(key):
-    User.query.get(key).delete()
-    db.session.commit()
 
 
 def _create_database():

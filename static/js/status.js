@@ -1,91 +1,115 @@
-// const dom = {};
-//
-// function attemptLogin() {
-//     const email = dom.$email.val();
-//     const password = dom.$password.val();
-//
-//     $.post({
-//         type: "POST",
-//         contentType: "application/json",
-//         url: '/login',
-//         data: JSON.stringify({email, password}),
-//         //dataType: "json"
-//     })
-//         .done((response) => {
-//             dom.$warning.hide();
-//             if (response.redirect) {
-//                 window.location.href = response.redirect;
-//             }
-//         })
-//         .fail(() => {
-//             dom.$warning.show();
-//         });
-// }
-//
-// window.onload = () => {
-//     dom.$email = $("#email");
-//     dom.$password = $("#password");
-//     dom.$loginForm = $("#login-form");
-//     dom.$warning = $("#warning");
-//     dom.$login = $("#login");
-//
-//     dom.$login.click(attemptLogin);
-//     dom.$loginForm
-//         .on('keypress', (e) => {
-//             if (e.keyCode === 13)
-//                 attemptLogin();
-//         });
-// };
-
 dom = {};
 
+function reset() {
+    dom.$garagesContainer.hide();
+    dom.$reservationContainer.hide();
+    dom.$garagesContainer.empty();
+    dom.$reservationContainer.empty();
+}
+
 function renderGarages(data) {
+    dom.$garagesContainer.show();
+    dom.$garagesContainer.append(`<h1>Choose a garage to book</h1>`);
+
     _.forEach(data, (garage) => {
         if (!garage.spots || garage.spots.length === 0) {
             return false;
         }
+        const id = _.uniqueId('garage-box');
         const spotCount = garage.spots.length;
-        const occupiedSpotCount = _.chain(garage.spots)
+        const availableSpotCount = _.chain(garage.spots)
             .filter((spot) => !spot.reservation)
             .size()
             .value();
 
-        dom.$garagesContent.append(`<br/>
-<div data-id=${garage.id} class="garage-box border">
+        dom.$garagesContainer.append(`<br/>`);
+        dom.$garagesContainer.append(`<div id=${id} data-id=${garage.id} class="garage-box border">
 <h3>${garage.name}</h3>
-<h4>${garage.address}</h4>
-<p>Available spots: ${occupiedSpotCount} / ${spotCount}</p>
+<h5>${garage.address}</h5>
+<a>Available spots: ${availableSpotCount} / ${spotCount}</a>
 </div>`);
-    });
 
-    dom.$garagesContent.find('.garage-box').click(function () {
-        const garageId = $(this).attr('data-id');
+        if (availableSpotCount > 0) {
+            $(`#${id}`)
+                .addClass('clickable')
+                .click(function () {
+                    $.post({
+                        type: "POST",
+                        contentType: "application/json",
+                        url: '/reserve/' + garage.id,
+                        dataType: "json"
+                    })
+                        .done(fetchDetails);
+                });
+        }
+
+    });
+}
+
+function renderReservation(garage) {
+    dom.$reservationContainer.show();
+    dom.$reservationContainer.append(`<h2>Your spot is currently reserved</h2>`);
+    dom.$reservationContainer.append(`<br/>`);
+
+    dom.$reservationContainer.append(`<h4>Reservation details</h4>`);
+    dom.$reservationContainer.append(`<p>Garage name: ${garage.name}</p>`);
+    dom.$reservationContainer.append(`<p>Garage address: ${garage.address}</p>`);
+    dom.$reservationContainer.append(`<p>Spot location: ${garage.spot.location}</p>`);
+    dom.$reservationContainer.append(`<br/>`);
+
+    dom.$reservationContainer.append(`<h4>Your reservation is valid until ${garage.spot.reservation.time}</h4>`);
+    dom.$reservationContainer.append(`<p>After this time, you will lose your spot</p>`);
+    dom.$reservationContainer.append(`<br/>`);
+
+    dom.$reservationContainer.append(`<h4>You may occupy your spot once you are at the garage</h4>`);
+    dom.$reservationContainer.append(`<br/>`);
+
+    dom.$reservationContainer.append(`<button class="btn btn-primary btn-block">Occupy</button>`);
+
+    dom.$reservationContainer.find('button').click(() => {
         $.post({
-            type: "POST",
             contentType: "application/json",
-            url: '/reserve/' + garageId,
+            url: '/occupy',
             dataType: "json"
         })
-            .done(fetch);
+            .done(fetchDetails);
     });
 }
 
-function reset() {
-    dom.$garagesContainer.hide();
-    dom.$occupyContainer.hide();
-    dom.$leaveContainer.hide();
 
-    dom.$garagesContent.empty();
+function renderOccupancy(garage) {
+    dom.$reservationContainer.show();
+    dom.$reservationContainer.append(`<h2>You are currently holding a spot</h2>`);
+    dom.$reservationContainer.append(`<br/>`);
+
+    dom.$reservationContainer.append(`<h4>Occupancy details</h4>`);
+    dom.$reservationContainer.append(`<p>Garage name: ${garage.name}</p>`);
+    dom.$reservationContainer.append(`<p>Garage address: ${garage.address}</p>`);
+    dom.$reservationContainer.append(`<p>Spot location: ${garage.spot.location}</p>`);
+    dom.$reservationContainer.append(`<br/>`);
+
+    dom.$reservationContainer.append(`<h4>This spot has been held since ${garage.spot.reservation.time}</h4>`);
+    dom.$reservationContainer.append(`<p>You will be billed based on how long you have stayed</p>`);
+    dom.$reservationContainer.append(`<br/>`);
+
+    dom.$reservationContainer.append(`<h4>You may choose to checkout anytime</h4>`);
+    dom.$reservationContainer.append(`<br/>`);
+
+    dom.$reservationContainer.append(`<button class="btn btn-primary btn-block">Checkout</button>`);
+
+    dom.$reservationContainer.find('button').click(() => {
+        $.post({
+            contentType: "application/json",
+            url: '/clear',
+            dataType: "json"
+        })
+            .done(fetchDetails);
+    });
 }
 
-function renderReservation() {
-    dom.$occupyContainer.show();
-    dom.$occupyContainer.append(`<h2>Your spot is currently reserved</h2>`);
-}
 
-function fetch() {
-    $.post({
-        type: "POST",
+function fetchDetails() {
+    $.get({
         contentType: "application/json",
         url: '/details',
         dataType: "json"
@@ -93,19 +117,18 @@ function fetch() {
         .done((response) => {
             reset();
             if (_.isArray(response)) {
-                dom.$garagesContainer.show();
                 renderGarages(response);
-            } else if (response) {
-                renderReservation();
+            } else if (_.isObject(response)) {
+                (response.spot.reservation.occupied ? renderOccupancy : renderReservation)(response);
+            } else {
+                window.alert('Illegal state.');
             }
         });
 }
 
 window.onload = () => {
     dom.$garagesContainer = $('#garages-container');
-    dom.$garagesContent = $('#garages-content');
-    dom.$occupyContainer = $('#occupy-container');
-    dom.$leaveContainer = $('#leave-container');
+    dom.$reservationContainer = $('#reservation-container');
 
-    fetch()
+    fetchDetails()
 };

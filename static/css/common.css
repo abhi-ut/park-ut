@@ -1,10 +1,13 @@
-.park-navbar {
-    color: #ffffff;
-}
-
 .garage-box {
     width: 400px;
     margin: auto;
-    padding: 20px;
+    padding: 40px 20px;
+}
+
+.clickable {
     cursor: pointer;
+}
+
+.center {
+    text-align: center;
 }
