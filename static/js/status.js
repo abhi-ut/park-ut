@@ -9,7 +9,7 @@ function reset() {
 
 function renderGarages(data) {
     dom.$garagesContainer.show();
-    dom.$garagesContainer.append(`<h1>Choose a garage to book</h1>`);
+    dom.$garagesContainer.append(`<h1>Choose a garage to book a spot at</h1>`);
     dom.$garagesContainer.append(`<br/>`);
 
     _.forEach(data, (garage) => {
@@ -23,7 +23,7 @@ function renderGarages(data) {
             .size()
             .value();
 
-        dom.$garagesContainer.append(`<div id=${id} class="garage-box card border shadow-sm mb-4 bg-white rounded">
+        dom.$garagesContainer.append(`<div id=${id} class="garage-box card border shadow-sm mb-4 mr-4 bg-white rounded">
 <h3>${garage.name}</h3>
 <h5>${garage.address}</h5>
 <a>Available spots: ${availableSpotCount} / ${spotCount}</a>

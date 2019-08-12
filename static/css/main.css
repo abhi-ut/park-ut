@@ -1,7 +1,8 @@
 .garage-box {
-    width: 400px;
+    width: 500px;
     margin: auto;
     padding: 40px 20px;
+    display: inline-block;
 }
 
 .clickable {

@@ -8,8 +8,8 @@
             <label>Garage</label>
             {% for garage in data %}
                 <br>
-                <input type="radio" name="garage_id" id={{ garage.name }} value={{ garage.id }} />
-                <label for={{ garage.name }}>{{ garage.name }}</label>
+                <input type="radio" name="garage_id" id={{ garage.id }} value={{ garage.id }} checked/>
+                <label for={{ garage.id }}>{{ garage.name }}</label>
             {% endfor %}
         </div>
 
@@ -20,6 +20,9 @@
 
         {% if success %}
             <p style="color: green;">Added spot successfully!</p>
+        {% endif %}
+        {% if invalid %}
+            <p style="color: red;">Please type in a valid spot name.</p>
         {% endif %}
 
         <button type="submit" class="btn btn-primary btn-block">Add</button>

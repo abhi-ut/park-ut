@@ -75,6 +75,9 @@ def register(app):
 
         if request.method == 'POST':
             data = request.form.to_dict(flat=True)
+            if not data['location']:
+                return router['add_spot'](['invalid'], data=model.garages())
+
             model.create(model.Spot, data)
             return router['add_spot'](['success'], data=model.garages())
 
