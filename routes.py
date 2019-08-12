@@ -1,4 +1,5 @@
-from flask import request, render_template, redirect, url_for, session, jsonify
+from flask import request, render_template, redirect, url_for, session, jsonify, flash
+from forms import LoginForm
 import model
 
 
@@ -12,13 +13,14 @@ def register(app):
 
     @app.route('/login', methods=['GET', 'POST'])
     def login():
+        form = LoginForm()
         if 'user_id' in session:
             return redirect(url_for('status'))
 
         if request.method == 'POST':
-            data = request.form.to_dict(flat=True)
-            email = data['email']
-            password = data['password']
+            #data = request.form.to_dict(flat=True)
+            email = form.email.data
+            password = form.password.data
 
             result = model.authenticate(email, password)
 
@@ -28,9 +30,9 @@ def register(app):
                 session['user_admin'] = result.admin
                 return redirect('/status')
             else:
-                return render_template('login.html', invalid=True)
+                return render_template('login.html', invalid=True, form= form)
 
-        return render_template('login.html')
+        return render_template('login.html', form = form)
 
     @app.route('/status')
     def status():

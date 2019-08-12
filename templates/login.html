@@ -1,27 +1,44 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <div class="content-section">
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Log In</legend>
+                <div class="form-group">
+                    {{ form.email.label(class="form-control-label") }}
+                    {% if form.email.errors %}
+                        {{ form.email(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.email.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.email(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.password.label(class="form-control-label") }}
+                    {% if form.password.errors %}
+                        {{ form.password(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.password.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.password(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
 
-    <form action="/login" method="POST" enctype="multipart/form-data">
+            </fieldset>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
+            </div>
 
-        <div class="form-group">
-            <label for="email">Email address</label>
-            <input type="text" name="email" id="email" value="" class="form-control"/>
-        </div>
-
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" name="password" id="password" value="" class="form-control"/>
-        </div>
-
-        {% if invalid %}
-        <p style="color: red;">Please check your username and password.</p>
-        {% endif %}
-
-        <button type="submit" class="btn btn-primary btn-block">Log in</button>
-    </form>
-
-{% endblock %}
-
-
-
+        </form>
+    </div>
+    </body>
+{% endblock content %}
