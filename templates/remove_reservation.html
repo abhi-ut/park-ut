@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <form action="/remove_reservation" method="POST" enctype="multipart/form-data">
+
+        <div class="form-group">
+            <label>Reservations</label>
+            {% for spot in spots %}
+                {% if ((spot.reservation is not none) and (spot.reservation.occupied == false)) %}
+                    <br>
+                    <input type="radio" name="reservation_id" id={{ spot.location }} value={{ spot.reservation.id }} />
+                    <label for={{ spot.location }}>{{ spot.location }} since {{ spot.reservation.time }}</label>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        {% if success %}
+            <p style="color: green;">Removed reservation successfully!</p>
+        {% endif %}
+
+        <button type="submit" class="btn btn-primary btn-block">Remove</button>
+    </form>
+
+{% endblock %}

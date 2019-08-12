@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <form action="/add_spot" method="POST" enctype="multipart/form-data">
+
+        <div class="form-group">
+            <label>Garage</label>
+            {% for garage in garages %}
+                <br>
+                <input type="radio" name="garage_id" id={{ garage.name }} value={{ garage.id }} />
+                <label for={{ garage.name }}>{{ garage.name }}</label>
+            {% endfor %}
+        </div>
+
+        <div class="form-group">
+            <label for="location">Location</label>
+            <input type="text" name="location" id="location" value="" class="form-control"/>
+        </div>
+
+        {% if success %}
+            <p style="color: green;">Added spot successfully!</p>
+        {% endif %}
+
+        <button type="submit" class="btn btn-primary btn-block">Add</button>
+    </form>
+
+{% endblock %}
+
+
+

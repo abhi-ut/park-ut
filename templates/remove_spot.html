@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <form action="/remove_spot" method="POST" enctype="multipart/form-data">
+
+        <div class="form-group">
+            <label>Spots</label>
+            {% for garage in garages %}
+                {% for spot in garage.spots %}
+                    <br>
+                    <input type="radio" name="spot_id" id={{ spot.location }} value={{ spot.id }} />
+                    <label for={{ spot.location }}>{{ garage.name }} - {{ spot.location }}</label>
+                {% endfor %}
+            {% endfor %}
+        </div>
+
+        {% if success %}
+            <p style="color: green;">Removed spot successfully!</p>
+        {% endif %}
+
+        <button type="submit" class="btn btn-primary btn-block">Remove</button>
+    </form>
+
+{% endblock %}

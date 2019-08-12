@@ -14,9 +14,6 @@
 .gitignore
 .idea
 .ipynb_checkpoints
-cloudsql_abhi
-2-structured-data
-venv
 db
 Parking.ipynb
 README.md

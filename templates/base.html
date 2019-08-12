@@ -1,79 +1,47 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	 <!-- Required meta tags -->
+    <title>Park at UT</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.15/lodash.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
-	{% if title %}
-		<title>Park-UT - Admin -{{ title }}</title>
-	{% else %}
-		<title>Park-UT - User</title>
-	{% endif %}
+    <link rel="stylesheet" href="/static/css/main.css">
+    {% if js %}
+        <script type="text/javascript" src="/static/js/{{ js }}"></script>
+    {% endif %}
 </head>
 <body>
-
-<nav class="navbar navbar-expand-md navbar-fixed-top " style="background-color: #5f788a">
-
-
-		    <div class="container">
-		      <a class="navbar-brand mr-4" style="color: white">Park-UT</a>
-		      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
-		        <span class="navbar-toggler-icon"></span>
-		      </button>
-		      <div class="collapse navbar-collapse" id="navbarToggle">
-		        <div class="navbar-nav mr-auto">
-		          <a class="nav-item nav-link" href="/" style="color: white">Home</a>
-
-		        </div>
-		        <!-- Navbar Right Side -->
-
-		      </div>
-		    </div>
+<nav class="park-navbar navbar navbar-dark bg-primary justify-content-between">
+    <p class="navbar-brand m-0 p-0">Park at UT</p>
+    {% if admin_page %}
+        <form name="Add Spot" method="get" action="/add_spot">
+            <button type="submit" class="btn btn-primary btn-block">Add Spot</button>
+        </form>
+        <form name="Remove Spot" method="get" action="/remove_spot">
+            <button type="submit" class="btn btn-primary btn-block">Remove Spot</button>
+        </form>
+        <form name="Remove Reservation" method="get" action="/remove_reservation">
+            <button type="submit" class="btn btn-primary btn-block">Remove Reservation</button>
+        </form>
+    {% endif %}
+    {% if show_logout %}
+        <form name="logout" method="post" action="/logout">
+            <button type="submit" class="btn btn-primary btn-block">Log out</button>
+        </form>
+    {% endif %}
 </nav>
-
 <br/>
-
-
-<main role="main" class="container">
-  <div class="row">
-    <div class="col-md-8">
-      {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-      {% endwith %}
-      {% block content %}{% endblock %}
-    </div>
-    <div class="col-md-4">
-      <div class="content-section">
-        <h3>Welcome to Park-UT</h3>
-        <p class='text-muted'>We are here to help you park!
-          <ul class="list-group">
-            <li class="list-group-item list-group-item-light">We help you check available parking spots</li>
-            <li class="list-group-item list-group-item-light">Now you can choose your preferred Garage!</li>
-            <li class="list-group-item list-group-item-light">See you at UT!</li>
-
-          </ul>
-
-      </div>
-    </div>
-  </div>
-</main>
-
-	<!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<div class="container">
+    {% block content %}{% endblock %}
+</div>
 </body>
 </html>

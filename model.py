@@ -73,6 +73,18 @@ def authenticate(email, password):
             .first())
 
 
+def plebs():
+    return User.query.filter_by(admin=False).all()
+
+
+def admin(email, password):
+    return (User.query
+            .filter(User.email == email)
+            .filter(User.password == password)
+            .filter_by(admin=True)
+            .first())
+
+
 def abort(reservation: Reservation):
     db.session.delete(reservation)
     db.session.commit()
@@ -94,8 +106,7 @@ def details(reservation: Reservation):
 
 
 def refresh():
-    garages = many(Garage)
-    for garage in garages:
+    for garage in many(Garage):
         for spot in garage.spots:
             reservation = spot.reservation
             if not validate(reservation):
@@ -109,9 +120,28 @@ def inform(user_id):
         if validate(existing_reservation):
             return details(existing_reservation)
 
-    refresh()
+    return garages()
 
+
+def garages():
+    refresh()
     return convert(many(Garage))
+
+
+def cascade(model, key):
+    obj = one(model, key)
+    if obj.reservation is not None:
+        db.session.delete(obj.reservation)
+    db.session.delete(obj)
+    db.session.commit()
+
+
+def remove(spot_id):
+    cascade(Spot, spot_id)
+
+
+def kill(user_id):
+    cascade(User, user_id)
 
 
 def reserve(user_id, garage_id):
@@ -124,7 +154,7 @@ def reserve(user_id, garage_id):
         'occupied': False,
         'user_id': user_id,
         'spot_id': spot.id,
-        'time': datetime.now() + timedelta(seconds=10)
+        'time': datetime.now() + timedelta(minutes=1)
     }
 
     create(Reservation, reservation)
