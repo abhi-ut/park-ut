@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <form action="/remove_user" method="POST" enctype="multipart/form-data">
+
+        <div class="form-group">
+            <label>Users</label>
+            {% for user in data %}
+                <br>
+                <input type="radio" name="user_id" id={{ user.email }} value={{ user.id }} />
+                <label for={{ user.email }}>{{ user.name }} - {{ user.email }}</label>
+            {% endfor %}
+        </div>
+
+        {% if success %}
+            <p style="color: green;">Removed user successfully!</p>
+        {% endif %}
+
+        <button type="submit" class="btn btn-primary btn-block" {% if data is not defined or data|length == 0 %}disabled{% endif %}>Remove</button>
+    </form>
+
+{% endblock %}

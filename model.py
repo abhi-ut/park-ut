@@ -66,15 +66,9 @@ class Reservation(db.Model):
 # [END model]
 
 
-def authenticate(email, password):
-    return (User.query
-            .filter(User.email == email)
-            .filter(User.password == password)
-            .first())
-
-
-def plebs():
-    return User.query.filter_by(admin=False).all()
+def abort(reservation: Reservation):
+    db.session.delete(reservation)
+    db.session.commit()
 
 
 def admin(email, password):
@@ -85,16 +79,38 @@ def admin(email, password):
             .first())
 
 
-def abort(reservation: Reservation):
-    db.session.delete(reservation)
+def authenticate(email, password):
+    return (User.query
+            .filter(User.email == email)
+            .filter(User.password == password)
+            .first())
+
+
+def cascade(model, key):
+    obj = one(model, key)
+    if obj.reservation is not None:
+        db.session.delete(obj.reservation)
+    db.session.delete(obj)
     db.session.commit()
 
 
-def validate(reservation: Reservation):
-    if reservation is None or reservation.occupied is True:
-        return True
-    else:
-        return reservation.time > datetime.now()
+def clear(user_id):
+    reservation = one(User, user_id).reservation
+    db.session.delete(reservation)
+    db.session.commit()
+    return True
+
+
+def create(model, data):
+    row = model(**data)
+    db.session.add(row)
+    db.session.commit()
+    return row
+
+
+def delete(model, key):
+    model.query.filter_by(id=key).delete()
+    db.session.commit()
 
 
 def details(reservation: Reservation):
@@ -105,12 +121,24 @@ def details(reservation: Reservation):
     return garage_dict
 
 
-def refresh():
-    for garage in many(Garage):
-        for spot in garage.spots:
-            reservation = spot.reservation
-            if not validate(reservation):
-                abort(reservation)
+def garages():
+    refresh()
+    return convert(many(Garage))
+
+
+def reservations():
+    result = []
+    for reservation in many(Reservation):
+        if validate(reservation):
+            if reservation.occupied is False:
+                spot = one(Spot, reservation.spot_id)
+                reservation_dict = convert(reservation)
+                reservation_dict['spot_location'] = spot.location
+                result.append(reservation_dict)
+        else:
+            abort(reservation)
+
+    return result
 
 
 def inform(user_id):
@@ -123,25 +151,49 @@ def inform(user_id):
     return garages()
 
 
-def garages():
-    refresh()
-    return convert(many(Garage))
+def kill(user_id):
+    cascade(User, user_id)
 
 
-def cascade(model, key):
-    obj = one(model, key)
-    if obj.reservation is not None:
-        db.session.delete(obj.reservation)
-    db.session.delete(obj)
+def many(model: db.Model):
+    return model.query.all()
+
+
+def occupy(user_id):
+    reservation = one(User, user_id).reservation
+    setattr(reservation, 'occupied', True)
+    setattr(reservation, 'time', datetime.now())
     db.session.commit()
+    return True
+
+
+def one(model: db.Model, key):
+    result = model.query.get(key)
+    if not result:
+        return None
+    return result
+
+
+def plebs():
+    return User.query.filter_by(admin=False).all()
+
+
+def refresh():
+    for reservation in many(Reservation):
+        if not validate(reservation):
+            abort(reservation)
+
+
+def register(data):
+    if data['password'] != data['password-dup']:
+        raise ValueError('Passwords do not match')
+    data.pop('password-dup')
+    data['admin'] = False
+    create(User, data)
 
 
 def remove(spot_id):
     cascade(Spot, spot_id)
-
-
-def kill(user_id):
-    cascade(User, user_id)
 
 
 def reserve(user_id, garage_id):
@@ -154,45 +206,23 @@ def reserve(user_id, garage_id):
         'occupied': False,
         'user_id': user_id,
         'spot_id': spot.id,
-        'time': datetime.now() + timedelta(minutes=1)
+        'time': datetime.now() + timedelta(minutes=10)
     }
 
     create(Reservation, reservation)
     return True
 
 
-def occupy(user_id):
-    reservation = one(User, user_id).reservation
-    setattr(reservation, 'occupied', True)
-    setattr(reservation, 'time', datetime.now())
-    db.session.commit()
-    return True
+def spots():
+    refresh()
+    return convert(many(Spot))
 
 
-def clear(user_id):
-    reservation = one(User, user_id).reservation
-    db.session.delete(reservation)
-    db.session.commit()
-    return True
+def validate(reservation: Reservation):
+    return reservation is None or reservation.occupied is True or reservation.time > datetime.now()
 
 
-def many(model):
-    return model.query.all()
-
-
-def one(model, key):
-    result = model.query.get(key)
-    if not result:
-        return None
-    return result
-
-
-def create(model, data):
-    row = model(**data)
-    db.session.add(row)
-    db.session.commit()
-    return row
-
+# _____
 
 def _create_database():
     app = Flask(__name__)

@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
+
     <form action="/remove_spot" method="POST" enctype="multipart/form-data">
 
         <div class="form-group">
             <label>Spots</label>
-            {% for garage in garages %}
+            {% for garage in data %}
                 {% for spot in garage.spots %}
                     <br>
                     <input type="radio" name="spot_id" id={{ spot.location }} value={{ spot.id }} />

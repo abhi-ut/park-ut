@@ -1,5 +1,17 @@
-from flask import request, render_template, redirect, url_for, session, jsonify
+from flask import request, redirect, url_for, session, jsonify
 import model
+from util import delay
+
+router = {
+    'login': delay('login.html', ['show_register']),
+    'register': delay('register.html', []),
+    'admin': delay('admin.html', []),
+    'status': delay('status.html', ['show_logout']),
+    'add_spot': delay('add_spot.html', ['admin_page', 'show_logout']),
+    'remove_spot': delay('remove_spot.html', ['admin_page', 'show_logout']),
+    'remove_reservation': delay('remove_reservation.html', ['admin_page', 'show_logout']),
+    'remove_user': delay('remove_user.html', ['admin_page', 'show_logout'])
+}
 
 
 def register(app):
@@ -22,11 +34,11 @@ def register(app):
                 session.permanent = True
                 session['user_id'] = result.id
                 session['user_admin'] = result.admin
-                return redirect('/status')
+                return redirect(url_for('status'))
             else:
-                return render_template('login.html', invalid=True)
+                return router['login'](['invalid'])
 
-        return render_template('login.html')
+        return router['login']([])
 
     @app.route('/admin', methods=['GET', 'POST'])
     def admin():
@@ -42,7 +54,6 @@ def register(app):
             password = data['password']
 
             result = model.admin(email, password)
-            app.logger.info(result)
 
             if isinstance(result, model.User):
                 session.permanent = True
@@ -50,9 +61,9 @@ def register(app):
                 session['user_admin'] = result.admin
                 return redirect(url_for('add_spot'))
             else:
-                return render_template('admin.html', admin_page=True, invalid=True)
+                return router['admin'](['invalid'])
 
-        return render_template('admin.html', admin_page=True)
+        return router['admin']([])
 
     @app.route('/add_spot', methods=['GET', 'POST'])
     def add_spot():
@@ -65,10 +76,9 @@ def register(app):
         if request.method == 'POST':
             data = request.form.to_dict(flat=True)
             model.create(model.Spot, data)
-            return render_template('add_spot.html', admin_page=True, show_logout=True, success=True,
-                                   garages=model.garages())
+            return router['add_spot'](['success'], data=model.garages())
 
-        return render_template('add_spot.html', admin_page=True, show_logout=True, garages=model.garages())
+        return router['add_spot']([], data=model.garages())
 
     @app.route('/remove_spot', methods=['GET', 'POST'])
     def remove_spot():
@@ -82,10 +92,9 @@ def register(app):
             data = request.form.to_dict(flat=True)
             model.remove(data['spot_id'])
 
-            return render_template('remove_spot.html', admin_page=True, show_logout=True, success=True,
-                                   garages=model.garages())
+            return router['remove_spot'](['success'], data=model.garages())
 
-        return render_template('remove_spot.html', admin_page=True, show_logout=True, garages=model.garages())
+        return router['remove_spot']([], data=model.garages())
 
     @app.route('/remove_reservation', methods=['GET', 'POST'])
     def remove_reservation():
@@ -95,24 +104,69 @@ def register(app):
         else:
             return redirect(url_for('admin'))
 
-        model.refresh()
+        if request.method == 'POST':
+            data = request.form.to_dict(flat=True)
+            model.delete(model.Reservation, data['reservation_id'])
+
+            return router['remove_reservation'](['success'], data=model.reservations())
+
+        app.logger.info(model.reservations())
+
+        return router['remove_reservation']([], data=model.reservations())
+
+    @app.route('/remove_user', methods=['GET', 'POST'])
+    def remove_user():
+        if 'user_id' in session:
+            if 'user_admin' not in session or session['user_admin'] is False:
+                return redirect(url_for('status'))
+        else:
+            return redirect(url_for('admin'))
 
         if request.method == 'POST':
             data = request.form.to_dict(flat=True)
-            model.abort(model.one(model.Reservation, data['reservation_id']))
+            model.kill(data['user_id'])
 
-            return render_template('remove_reservation.html', admin_page=True, show_logout=True, success=True,
-                                   garages=model.garages())
+            return router['remove_user'](['success'], data=model.plebs())
 
-        return render_template('remove_reservation.html', admin_page=True, show_logout=True,
-                               spots=model.many(model.Spot))
+        app.logger.info(model.plebs())
+        return router['remove_user']([], data=model.plebs())
+
+    @app.route('/register', methods=['GET', 'POST'])
+    def register():
+        if 'user_id' in session:
+            return redirect(url_for('status'))
+
+        if request.method == 'POST':
+            data = request.form.to_dict(flat=True)
+            app.logger.info(data)
+            try:
+                model.register(data)
+            except ValueError as e:
+                app.logger.info(e)
+                return router['register'](['mismatch'])
+            except Exception as e:
+                app.logger.info(e)
+                return router['register'](['invalid'])
+
+            return router['login'](['success'])
+
+        return router['register']([])
 
     @app.route('/status')
     def status():
         if 'user_id' not in session:
             return redirect(url_for('login'))
 
-        return render_template('status.html', show_logout=True, js='status.js')
+        return router['status'](['success'], js='status.js')
+
+    @app.route('/logout', methods=['POST'])
+    def logout():
+        if 'user_id' in session:
+            del session['user_id']
+            del session['user_admin']
+            session.permanent = False
+
+        return redirect(url_for('login'))
 
     @app.route('/details')
     def details():
@@ -123,15 +177,6 @@ def register(app):
         app.logger.info(result)
 
         return jsonify(result)
-
-    @app.route('/logout', methods=['POST'])
-    def logout():
-        if 'user_id' in session:
-            del session['user_id']
-            del session['user_admin']
-            session.permanent = False
-
-        return redirect(url_for('login'))
 
     @app.route('/reserve/<garage_id>', methods=['POST'])
     def reserve(garage_id):

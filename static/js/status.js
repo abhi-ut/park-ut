@@ -16,14 +16,14 @@ function renderGarages(data) {
         if (!garage.spots || garage.spots.length === 0) {
             return false;
         }
-        const id = _.uniqueId('garage-box');
+        const id = _.uniqueId('garage-box-');
         const spotCount = garage.spots.length;
         const availableSpotCount = _.chain(garage.spots)
             .filter((spot) => !spot.reservation)
             .size()
             .value();
 
-        dom.$garagesContainer.append(`<div id=${id} data-id=${garage.id} class="garage-box card border shadow mb-5 bg-white rounded">
+        dom.$garagesContainer.append(`<div id=${id} class="garage-box card border shadow-sm mb-4 bg-white rounded">
 <h3>${garage.name}</h3>
 <h5>${garage.address}</h5>
 <a>Available spots: ${availableSpotCount} / ${spotCount}</a>
@@ -48,7 +48,7 @@ function renderGarages(data) {
 
 function renderReservation(garage) {
     dom.$reservationContainer.show();
-    dom.$reservationContainer.append(`<h2>Your spot is currently reserved</h2>`);
+    dom.$reservationContainer.append(`<h2>Your spot is currently reserved for 10 minutes</h2>`);
     dom.$reservationContainer.append(`<br/>`);
 
     dom.$reservationContainer.append(`<h4>Reservation details</h4>`);
@@ -92,7 +92,7 @@ function renderOccupancy(garage) {
     dom.$reservationContainer.append(`<p>You will be billed based on how long you have stayed</p>`);
     dom.$reservationContainer.append(`<br/>`);
 
-    dom.$reservationContainer.append(`<h4>You may choose to checkout anytime</h4>`);
+    dom.$reservationContainer.append(`<h4>You may choose to checkout at anytime</h4>`);
     dom.$reservationContainer.append(`<br/>`);
 
     dom.$reservationContainer.append(`<button class="btn btn-primary btn-block">Checkout</button>`);

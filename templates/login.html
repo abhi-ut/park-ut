@@ -14,8 +14,11 @@
             <input type="password" name="password" id="password" value="" class="form-control"/>
         </div>
 
+        {% if success %}
+            <p style="color: green;">You have registered successfully!</p>
+        {% endif %}
         {% if invalid %}
-        <p style="color: red;">Please check your username and password.</p>
+            <p style="color: red;">Please check your username and password.</p>
         {% endif %}
 
         <button type="submit" class="btn btn-primary btn-block">Log in</button>

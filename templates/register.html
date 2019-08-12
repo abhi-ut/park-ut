@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <form action="/register" method="POST" enctype="multipart/form-data">
+
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" name="name" id="name" value="" class="form-control"/>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email address</label>
+            <input type="text" name="email" id="email" value="" class="form-control"/>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" value="" class="form-control"/>
+        </div>
+
+        <div class="form-group">
+            <label for="password-dup">Re-enter password</label>
+            <input type="password" name="password-dup" id="password-dup" value="" class="form-control"/>
+        </div>
+
+        {% if mismatch %}
+            <p style="color: red;">You have entered differing passwords.</p>
+        {% endif %}
+        {% if invalid %}
+            <p style="color: red;">This email address is already registered with us.</p>
+        {% endif %}
+
+        <button type="submit" class="btn btn-primary btn-block">Register</button>
+    </form>
+
+{% endblock %}
+
+
+

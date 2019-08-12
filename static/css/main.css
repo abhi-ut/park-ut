@@ -11,3 +11,12 @@
 .center {
     text-align: center;
 }
+
+.park-navbar {
+    justify-content: normal;
+}
+
+.nav-right {
+    margin-left: auto;
+    display: flex;
+}
