@@ -2,8 +2,6 @@ from flask import render_template
 import datetime
 from pytz import timezone
 
-dt_fmt = '%Y-%m-%d %H:%M:%S %Z%z'
-
 # assumption made for course purposes that we only use this for now in Texas
 dt_central = timezone('US/Central')
 
@@ -29,7 +27,7 @@ def convert(model_obj):
         elif key in ['reservation', 'spot']:
             result[key] = convert(value)
         elif isinstance(value, datetime.datetime):
-            result[key] = value.astimezone(dt_central).strftime(dt_fmt)
+            result[key] = value.astimezone(dt_central).strftime('%c')
         elif key not in ['_sa_instance_state']:
             result[key] = value
 
