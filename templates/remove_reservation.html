@@ -6,10 +6,10 @@
 
         <div class="form-group">
             <label>Reservations</label>
-            {% for reservation in data %}
+            {% for res in data %}
                 <br>
-                <input type="radio" name="reservation_id" id={{ reservation.spot_location }} value={{ reservation.id }} />
-                <label for={{ reservation.spot_location }}>{{ reservation.spot_location }} expiring at {{ reservation.time }}</label>
+                <input type="radio" name="reservation_id" id={{ res.spot_location }} value={{ res.id }} checked/>
+                <label for={{ res.spot_location }}>{{ res.spot_location }} expiring at {{ res.time }}</label>
             {% endfor %}
         </div>
 
@@ -17,7 +17,9 @@
             <p style="color: green;">Removed reservation successfully!</p>
         {% endif %}
 
-        <button type="submit" class="btn btn-primary btn-block" {% if data is not defined or data|length == 0 %}disabled{% endif %}>Remove</button>
+        <button type="submit" class="btn btn-primary btn-block"
+                {% if data is not defined or data|length == 0 %}disabled{% endif %}>Remove
+        </button>
     </form>
 
 {% endblock %}
