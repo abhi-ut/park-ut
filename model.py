@@ -57,7 +57,7 @@ class Reservation(db.Model):
     occupied = db.Column(db.Boolean, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, unique=True)
     spot_id = db.Column(db.Integer, db.ForeignKey('spots.id'), nullable=False, unique=True)
-    time = db.Column(db.DateTime, nullable=False)
+    time = db.Column(db.DateTime(timezone=True), nullable=False)
 
     def __repr__(self):
         return "<Reservation(occupied='%s', time=%s)" % (self.occupied, self.time)
