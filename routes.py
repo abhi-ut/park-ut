@@ -1,4 +1,4 @@
-from flask import request, redirect, url_for, session, jsonify
+from flask import request, redirect, url_for, session, jsonify, abort
 import model
 from util import delay
 
@@ -17,6 +17,22 @@ router = {
 def register(app):
     with app.app_context():
         model.init_app(app)
+
+    @app.route('/authenticate', methods=['POST'])
+    def authenticate():
+
+        email = request.args.get('email')
+        password = request.args.get('password')
+
+        result = model.authenticate(email, password)
+
+        if isinstance(result, model.User):
+            session.permanent = True
+            session['user_id'] = result.id
+            session['user_admin'] = result.admin
+            return jsonify(True)
+        else:
+            return abort(401)
 
     @app.route('/', methods=['GET', 'POST'])
     def login():
