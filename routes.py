@@ -30,7 +30,7 @@ def register(app):
             session.permanent = True
             session['user_id'] = result.id
             session['user_admin'] = result.admin
-            return jsonify(True)
+            return jsonify({"result": True})
         else:
             return abort(401)
 
