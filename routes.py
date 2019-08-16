@@ -18,8 +18,8 @@ def register(app):
     with app.app_context():
         model.init_app(app)
 
-    @app.route('/authenticate', methods=['POST'])
-    def authenticate():
+    @app.route('/auth', methods=['POST'])
+    def auth():
 
         email = request.args.get('email')
         password = request.args.get('password')
@@ -27,10 +27,10 @@ def register(app):
         result = model.authenticate(email, password)
 
         if isinstance(result, model.User):
-            session.permanent = True
-            session['user_id'] = result.id
-            session['user_admin'] = result.admin
-            return jsonify({"result": True})
+            # session.permanent = True
+            # session['user_id'] = result.id
+            # session['user_admin'] = result.admin
+            return jsonify(model.convert(result))
         else:
             return abort(401)
 
@@ -189,39 +189,46 @@ def register(app):
 
     @app.route('/details')
     def details():
-        if 'user_id' not in session:
-            return redirect(url_for('login'))
+        user_id = request.args.get('user_id')
+        if user_id is None:
+            if 'user_id' not in session:
+                return redirect(url_for('login'))
+            else:
+                user_id = session['user_id']
 
-        result = model.inform(session['user_id'])
-        app.logger.info(result)
-
-        return jsonify(result)
+        return jsonify(model.inform(user_id))
 
     @app.route('/reserve/<garage_id>', methods=['POST'])
     def reserve(garage_id):
-        if 'user_id' not in session:
-            return redirect(url_for('login'))
+        user_id = request.args.get('user_id')
+        if user_id is None:
+            if 'user_id' not in session:
+                return redirect(url_for('login'))
+            else:
+                user_id = session['user_id']
 
-        result = model.reserve(session['user_id'], garage_id)
-        app.logger.info(result)
-        return jsonify(result)
+        return jsonify(model.reserve(user_id, garage_id))
 
     @app.route('/occupy', methods=['POST'])
     def occupy():
-        if 'user_id' not in session:
-            return redirect(url_for('login'))
+        user_id = request.args.get('user_id')
+        if user_id is None:
+            if 'user_id' not in session:
+                return redirect(url_for('login'))
+            else:
+                user_id = session['user_id']
 
-        result = model.occupy(session['user_id'])
-        app.logger.info(result)
-        return jsonify(result)
+        return jsonify(model.occupy(user_id))
 
     @app.route('/clear', methods=['POST'])
     def clear():
-        if 'user_id' not in session:
-            return redirect(url_for('login'))
+        user_id = request.args.get('user_id')
+        if user_id is None:
+            if 'user_id' not in session:
+                return redirect(url_for('login'))
+            else:
+                user_id = session['user_id']
 
-        result = model.clear(session['user_id'])
-        app.logger.info(result)
-        return jsonify(result)
+        return jsonify(model.clear(user_id))
 
     return app
