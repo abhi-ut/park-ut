@@ -18,22 +18,6 @@ def register(app):
     with app.app_context():
         model.init_app(app)
 
-    @app.route('/auth', methods=['POST'])
-    def auth():
-
-        email = request.args.get('email')
-        password = request.args.get('password')
-
-        result = model.authenticate(email, password)
-
-        if isinstance(result, model.User):
-            # session.permanent = True
-            # session['user_id'] = result.id
-            # session['user_admin'] = result.admin
-            return jsonify(model.convert(result))
-        else:
-            return abort(401)
-
     @app.route('/', methods=['GET', 'POST'])
     def login():
         if 'user_id' in session:
@@ -230,5 +214,29 @@ def register(app):
                 user_id = session['user_id']
 
         return jsonify(model.clear(user_id))
+
+    @app.route('/auth', methods=['POST'])
+    def auth():
+        email = request.args.get('email')
+        password = request.args.get('password')
+
+        result = model.authenticate(email, password)
+
+        if isinstance(result, model.User):
+            return jsonify(model.convert(result))
+        else:
+            return abort(401)
+
+    @app.route('/signup', methods=['POST'])
+    def signup():
+        data = request.json
+        app.logger.info(data)
+
+        try:
+            model.register(data)
+            return jsonify({'result': True})
+        except Exception as e:
+            app.logger.info(e)
+            return abort(400)
 
     return app

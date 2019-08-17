@@ -105,7 +105,6 @@ def create(model, data):
     row = model(**data)
     db.session.add(row)
     db.session.commit()
-    return row
 
 
 def delete(model, key):
@@ -185,9 +184,9 @@ def refresh():
 
 
 def register(data):
-    if data['password'] != data['password-dup']:
+    if data['password'] != data['passwordDuplicate']:
         raise ValueError('Passwords do not match')
-    data.pop('password-dup')
+    data.pop('passwordDuplicate')
     data['admin'] = False
     create(User, data)
 
