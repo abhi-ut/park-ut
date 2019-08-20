@@ -16,38 +16,47 @@
 <body>
 <nav class="park-navbar navbar navbar-dark bg-primary">
     <form method="get" action="/status">
-        <button type="submit" class="navbar-brand btn btn-primary btn-block">Park at UT</button>
+        <button type="submit" class="navbar-brand btn btn-primary">Park at UT</button>
     </form>
     {% if admin_page %}
         <form method="get" action="/add_spot">
-            <button type="submit" class="btn btn-primary btn-block">Add Spot</button>
+            <button type="submit" class="btn btn-primary">Add Spot</button>
         </form>
         <form method="get" action="/remove_spot">
-            <button type="submit" class="btn btn-primary btn-block">Remove Spot</button>
+            <button type="submit" class="btn btn-primary">Remove Spot</button>
         </form>
         <form method="get" action="/remove_reservation">
-            <button type="submit" class="btn btn-primary btn-block">Remove Reservation</button>
+            <button type="submit" class="btn btn-primary">Remove Reservation</button>
         </form>
         <form method="get" action="/remove_user">
-            <button type="submit" class="btn btn-primary btn-block">Remove User</button>
+            <button type="submit" class="btn btn-primary">Remove User</button>
         </form>
     {% endif %}
     <div class="nav-right">
+        {% if info_page is undefined %}
+            <form method="get" action="/info">
+                <button type="submit" class="btn btn-primary">Info</button>
+            </form>
+        {% endif %}
+        {% if about_page is undefined %}
+            <form method="get" action="/about">
+                <button type="submit" class="btn btn-primary">About</button>
+            </form>
+        {% endif %}
         {% if show_register %}
             <form method="get" action="/register">
-                <button type="submit" class="btn btn-primary btn-block">Register</button>
+                <button type="submit" class="btn btn-primary">Register</button>
             </form>
         {% endif %}
         {% if show_logout %}
             <form method="post" action="/logout">
-                <button type="submit" class="btn btn-primary btn-block">Log out</button>
+                <button type="submit" class="btn btn-primary">Log out</button>
             </form>
         {% endif %}
     </div>
 
 </nav>
-<br/>
-<div class="container">
+<div class="container park-container">
     {% block content %}{% endblock %}
 </div>
 </body>

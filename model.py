@@ -186,6 +186,9 @@ def refresh():
 def register(data):
     if data['password'] != data['passwordDuplicate']:
         raise ValueError('Passwords do not match')
+    if data['email'] is '' or data['password'] is '':
+        raise ValueError('Empty email address or password')
+
     data.pop('passwordDuplicate')
     data['admin'] = False
     create(User, data)

@@ -34,8 +34,8 @@ def convert(model_obj):
     return result
 
 
-def delay(route: str, flags: list):
-    def invoke(new_flags: list, data=None, js=None):
+def delay(route: str, flags: list, js=None):
+    def invoke(new_flags: list, data=None):
         args = {} if data is None else {'data': data}
         if js is not None:
             args['js'] = js

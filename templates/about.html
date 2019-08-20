@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h1 class="mb-5">About</h1>
+
+    <p>Parking is a major hassle here at the University of Texas at Austin. For our Advanced Programming and App
+        Development course project, we decided to design and develop a solution that lets a user see a list of garages
+        around campus and the number of spots available at each garage. They may choose to reserve a spot for a limited
+        amount of time. At the garage entrance, the user is to verify that they had a reservation and occupy that
+        reservation. The solution also keeps track of how long a user has parked at the spot and can provide support for
+        third-party pluggable billing services.</p>
+
+    <p>Made by Abhi and Vrinda.</p>
+
+    <div class="container py-4">
+        <div class="row">
+            <img src="/static/img/misc/abhi.jpg" alt="Abhi"
+                 class="half-screen col card border shadow-sm rounded mr-4">
+            <img src="/static/img/misc/vrinda.jpg" alt="Vrinda"
+                 class="half-screen col card border shadow-sm rounded ml-4">
+        </div>
+    </div>
+
+{% endblock %}

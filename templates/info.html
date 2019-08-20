@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h1 class="mb-5">Information</h1>
+
+    <h3>Narrative</h3>
+    <div class="py-4">
+
+        <p>This project uses the following technologies and libraries:</p>
+
+        <ul>
+            <li class="mb-2">Server:
+                <ul>
+                    <li>GCP -- as the cloud platform</li>
+                    <li>MySQL 5.7 -- as the database</li>
+                    <li>Werkzeug 0.15.5 -- as the server</li>
+                    <li>Python 3.7 -- as the primary language</li>
+                    <li>Flask 1.0.2 -- as the application framework</li>
+                    <li>Flask-SQLAlchemy 2.4.0 -- as an object-relational mapper</li>
+                    <li>pytz 2019.2 -- to manage timezones</li>
+                </ul>
+            </li>
+            <li class="mb-2">Web interface:
+                <ul>
+                    <li>jQuery 3.4.1 -- for DOM queries and ajax calls</li>
+                    <li>Bootstrap 4.3.1 -- to provide theming and base styles</li>
+                    <li>lodash 4.17.15 -- to better handle data structures</li>
+                </ul>
+            </li>
+            <li class="mb-2">Mobile interface:
+                <ul>
+                    <li>Kotlin -- for the primary language</li>
+                    <li>Gradle -- as a task runner</li>
+                    <li>OkHttp -- to handle server calls</li>
+                </ul>
+            </li>
+        </ul>
+
+    </div>
+
+
+    <h3 class="pt-2">Using the web interface</h3>
+
+    <div class="py-4">
+        <img src="/static/img/web/login.png" alt="Login page" class="screen card border shadow-sm mb-3 rounded">
+        <p class="center">The user may log in at the landing page by entering their email address and password.</p>
+    </div>
+
+    <div class="py-4">
+        <img src="/static/img/web/register.png" alt="Registration page"
+             class="screen card border shadow-sm mb-3 rounded">
+        <p class="center">If they have not yet, they may register using their details.</p>
+    </div>
+
+    <div class="py-4">
+        <img src="/static/img/web/list.png" alt="Garage list page"
+             class="screen card border shadow-sm mb-3 rounded">
+        <p class="center">Upon logging in, the user sees a list of the garages and the available spots at these
+            garages. They may click on a card to book a spot.</p>
+    </div>
+
+    <div class="py-4">
+        <img src="/static/img/web/reserved.png" alt="Reservation page"
+             class="screen card border shadow-sm mb-3 rounded">
+        <p class="center">Once a spot is reserved, the user is informed about the reservation and given a choice to
+            occupy their spot.</p>
+    </div>
+
+    <div class="py-4">
+        <img src="/static/img/web/occupied.png" alt="Occupancy page"
+             class="screen card border shadow-sm mb-3 rounded">
+        <p class="center">A user that is currently occupying a spot may check out any time.</p>
+    </div>
+
+
+    <h3 class="pt-2">Using the android app interface</h3>
+
+    <div class="container py-4">
+        <div class="row mb-3">
+            <img src="/static/img/android/login.jpg" alt="Login page"
+                 class="half-screen col card border shadow-sm rounded mr-4">
+            <img src="/static/img/android/login-2.jpg" alt="Login page"
+                 class="half-screen col card border shadow-sm rounded ml-4">
+        </div>
+        <p class="center">The app login screen with password validation.</p>
+    </div>
+
+    <div class="container py-4">
+        <div class="row mb-3">
+            <img src="/static/img/android/register.jpg" alt="Register page"
+                 class="half-screen col card border shadow-sm rounded mr-4">
+            <img src="/static/img/android/register-2.jpg" alt="Register page"
+                 class="half-screen col card border shadow-sm rounded ml-4">
+        </div>
+        <p class="center">Registration with more password validation.</p>
+    </div>
+
+    <div class="container py-4">
+        <div class="row mb-3">
+            <img src="/static/img/android/list.jpg" alt="Garages page"
+                 class="half-screen col card border shadow-sm rounded mr-4">
+            <img src="/static/img/android/reserve.jpg" alt="Reservation page"
+                 class="half-screen col card border shadow-sm rounded ml-4">
+        </div>
+        <p class="center">These screens showcase the list of garages along with the ability to reserve a spot.</p>
+    </div>
+
+    <div class="container py-4">
+        <div class="row mb-3">
+            <img src="/static/img/android/occupy.jpg" alt="Occupy page"
+                 class="half-screen col card border shadow-sm rounded mr-4">
+            <img src="/static/img/android/checkout.jpg" alt="Checkout page"
+                 class="half-screen col card border shadow-sm rounded ml-4">
+        </div>
+        <p class="center">The user can choose to occupy and checkout.</p>
+    </div>
+
+
+    <h3 class="py-4">Download the Android App</h3>
+
+    <a href="/static/park-ut.apk" download>
+        <button class="btn btn-primary">Download APK</button>
+    </a>
+
+
+{% endblock %}

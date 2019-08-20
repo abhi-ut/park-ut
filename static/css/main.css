@@ -1,3 +1,17 @@
+.park-container {
+    padding-top: 4%;
+    padding-bottom: 4%;
+}
+
+.screen {
+    height: auto;
+    width: 100%;
+}
+
+.half-screen {
+    padding: 10px;
+}
+
 .garage-box {
     width: 500px;
     margin: auto;

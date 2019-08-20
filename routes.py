@@ -6,7 +6,9 @@ router = {
     'login': delay('login.html', ['show_register']),
     'register': delay('register.html', []),
     'admin': delay('admin.html', []),
-    'status': delay('status.html', ['show_logout']),
+    'status': delay('status.html', ['show_logout'], js='status.js'),
+    'info': delay('info.html', ['info_page']),
+    'about': delay('about.html', ['about_page']),
     'add_spot': delay('add_spot.html', ['admin_page', 'show_logout']),
     'remove_spot': delay('remove_spot.html', ['admin_page', 'show_logout']),
     'remove_reservation': delay('remove_reservation.html', ['admin_page', 'show_logout']),
@@ -113,8 +115,6 @@ def register(app):
 
             return router['remove_reservation'](['success'], data=model.reservations())
 
-        app.logger.info(model.reservations())
-
         return router['remove_reservation']([], data=model.reservations())
 
     @app.route('/remove_user', methods=['GET', 'POST'])
@@ -131,7 +131,6 @@ def register(app):
 
             return router['remove_user'](['success'], data=model.plebs())
 
-        app.logger.info(model.plebs())
         return router['remove_user']([], data=model.plebs())
 
     @app.route('/register', methods=['GET', 'POST'])
@@ -141,14 +140,11 @@ def register(app):
 
         if request.method == 'POST':
             data = request.form.to_dict(flat=True)
-            app.logger.info(data)
             try:
                 model.register(data)
             except ValueError as e:
-                app.logger.info(e)
                 return router['register'](['mismatch'])
             except Exception as e:
-                app.logger.info(e)
                 return router['register'](['invalid'])
 
             return router['login'](['success'])
@@ -160,7 +156,7 @@ def register(app):
         if 'user_id' not in session:
             return redirect(url_for('login'))
 
-        return router['status'](['success'], js='status.js')
+        return router['status'](['success'])
 
     @app.route('/logout', methods=['POST'])
     def logout():
@@ -215,6 +211,14 @@ def register(app):
 
         return jsonify(model.clear(user_id))
 
+    @app.route('/info')
+    def info():
+        return router['info']([])
+
+    @app.route('/about')
+    def about():
+        return router['about']([])
+
     @app.route('/auth', methods=['POST'])
     def auth():
         email = request.args.get('email')
@@ -229,14 +233,12 @@ def register(app):
 
     @app.route('/signup', methods=['POST'])
     def signup():
-        data = request.json
-        app.logger.info(data)
+        data = request.get_json()
 
         try:
             model.register(data)
             return jsonify({'result': True})
         except Exception as e:
-            app.logger.info(e)
             return abort(400)
 
     return app
