@@ -14,8 +14,7 @@
 .gitignore
 .idea
 .ipynb_checkpoints
-db
-Parking.ipynb
+jupyter
 README.md
 
 # Python pycache:
